@@ -3,6 +3,7 @@ require 'sqlite3'
 class Db
   def initialize
     @db = SQLite3::Database.open './grailed-exercise.sqlite3'
+    @quit = false
   end
 
   def resolve_username_collisions(dry_run=true)
@@ -21,14 +22,24 @@ class Db
     update_users(users, dry_run)
   end
 
-  def print_users_with_disallowed_names
+  def pretty_print_users_with_disallowed_names
     users = get_users_with_disallowed_usernames(get_disallowed_usernames())
     users.each do |user|
       puts "#{user[:username]} with id #{user[:id]}"
     end
   end
 
-  def get_users_with_disallowed_usernames(disallowed_usernames)
+  def print_users_with_disallowed_names()
+    disallowed_usernames = get_disallowed_usernames()
+    invalid_users = []
+    disallowed_usernames.each do |username|
+      invalid_user = @db.execute "SELECT id, username FROM users WHERE username='#{username[:username]}';"
+      invalid_users << invalid_user
+    end
+    invalid_users
+  end
+
+  def get_users_with_disallowed_usernames()
     invalid_users = []
     disallowed_usernames.each do |username|
       invalid_user = @db.execute "SELECT id, username FROM users WHERE username='#{username[:username]}';"
@@ -36,6 +47,12 @@ class Db
       invalid_users << invalid_user
     end
     invalid_users.flatten
+  end
+
+  def quit
+    @quit = true
+    @db.close if @db
+    puts 'Bye!'
   end
 
   private def get_disallowed_usernames
