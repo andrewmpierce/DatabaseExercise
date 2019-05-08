@@ -1,9 +1,11 @@
 require 'sqlite3'
 
 class Db
-  def initialize
-    @db = SQLite3::Database.open './grailed-exercise.sqlite3'
-    @quit = false
+  attr_reader :request_to_exit
+
+  def initialize(db_file)
+    @db = get_db_handler(db_file)
+    @request_to_exit = false
   end
 
   def resolve_username_collisions(dry_run=true)
@@ -50,9 +52,14 @@ class Db
   end
 
   def quit
-    @quit = true
+    @request_to_exit = true
     @db.close if @db
     puts 'Bye!'
+  end
+
+  private def get_db_handler
+    return SQLite3::Database.new ":memory:" if @test
+    SQLite3::Database.open './grailed-exercise.sqlite3'
   end
 
   private def get_disallowed_usernames
@@ -107,5 +114,4 @@ class Db
     end
     return_array
   end
-
 end
