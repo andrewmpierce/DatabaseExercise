@@ -19,8 +19,7 @@ class Db
   end
 
   def resolve_disallowed_username_collisions(dry_run=true)
-    disallowed = get_disallowed_usernames()
-    users = get_users_with_disallowed_usernames(disallowed)
+    users = get_users_with_disallowed_usernames()
     update_users(users, dry_run)
   end
 

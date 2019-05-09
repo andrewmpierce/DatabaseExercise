@@ -36,5 +36,16 @@ describe Db do
      expect(duplicate_users.length).to eq 0
      drop_test_tables_and_close(test_db)
    end
+
+   it 'resolves disallowed users collisions' do
+     test_db = get_db_handler()
+     create_test_db_schema(test_db)
+     load_test_db(test_db)
+     db_interface = Db.new(test_db_file)
+     db_interface.resolve_disallowed_username_collisions(dry_run=false)
+     disallowed_users = find_disallowed_usernames(test_db)
+     expect(disallowed_users.length).to eq 0
+     drop_test_tables_and_close(test_db)
+   end
  end
 end

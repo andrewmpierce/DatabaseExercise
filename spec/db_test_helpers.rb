@@ -8,15 +8,8 @@ module DbTestHelpers
     './test_db.sqlite3'
   end
 
-  def table_exists?(db, tablename)
-    result = db.execute "SELECT name FROM sqlite_master WHERE type='table' AND name='#{tablename}';"
-    !result.empty?
-  end
-
   def create_test_db_schema(db)
-    # if table_exists?(db, 'users') || table_exists?(db, 'disallowed_usernames')
-    #   drop_test_tables_and_close(db)
-    # end
+    drop_tables_if_exist(db)
     db.execute 'CREATE TABLE users(id INTEGER PRIMARY KEY, username TEXT)'
     db.execute 'CREATE TABLE disallowed_usernames(id INTEGER PRIMARY KEY, invalid_username TEXT)'
   end
@@ -33,9 +26,14 @@ module DbTestHelpers
     end
   end
 
+  def drop_tables_if_exist(db)
+    db.execute 'DROP TABLE IF EXISTS users'
+    db.execute 'DROP TABLE IF EXISTS disallowed_usernames'
+  end
+
   def drop_test_tables_and_close(db)
-    db.execute 'DROP TABLE users'
-    db.execute 'DROP TABLE disallowed_usernames'
+    db.execute 'DROP TABLE IF EXISTS users'
+    db.execute 'DROP TABLE IF EXISTS disallowed_usernames'
     db.close
   end
 
@@ -48,6 +46,16 @@ module DbTestHelpers
     SQL
     db.execute query
   end
+
+  def find_disallowed_usernames(db)
+    results = []
+    test_disallowed_usernames().each do |username|
+      user = db.execute "SELECT username FROM users WHERE username='#{username}';"
+      results << user if !user.empty?
+    end
+    results
+  end
+
 
   def test_disallowed_usernames
     ['grailed', 'privacy', 'settings']
