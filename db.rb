@@ -23,7 +23,7 @@ class Db
     update_users(users, dry_run)
   end
 
-  def pretty_print_users_with_disallowed_names
+  def pretty_print_users_with_disallowed_names()
     users = get_users_with_disallowed_usernames()
     users.each do |user|
       puts "#{user[:username]} with id #{user[:id]}"
