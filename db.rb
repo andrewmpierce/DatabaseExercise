@@ -25,23 +25,14 @@ class Db
   end
 
   def pretty_print_users_with_disallowed_names
-    users = get_users_with_disallowed_usernames(get_disallowed_usernames())
+    users = get_users_with_disallowed_usernames()
     users.each do |user|
       puts "#{user[:username]} with id #{user[:id]}"
     end
   end
 
-  def print_users_with_disallowed_names()
-    disallowed_usernames = get_disallowed_usernames()
-    invalid_users = []
-    disallowed_usernames.each do |username|
-      invalid_user = @db.execute "SELECT id, username FROM users WHERE username='#{username[:username]}';"
-      invalid_users << invalid_user
-    end
-    invalid_users
-  end
-
   def get_users_with_disallowed_usernames()
+    disallowed_usernames = get_disallowed_usernames()
     invalid_users = []
     disallowed_usernames.each do |username|
       invalid_user = @db.execute "SELECT id, username FROM users WHERE username='#{username[:username]}';"
@@ -57,9 +48,8 @@ class Db
     puts 'Bye!'
   end
 
-  private def get_db_handler
-    return SQLite3::Database.new ":memory:" if @test
-    SQLite3::Database.open './grailed-exercise.sqlite3'
+  private def get_db_handler(db_file)
+    SQLite3::Database.open db_file
   end
 
   private def get_disallowed_usernames
@@ -89,7 +79,7 @@ class Db
       if dry_run
         puts "#{user_to_change[:username]} with id #{user_to_change[:id]} will become #{new_username}"
       else
-        @db.execute "UPDATE users SET username=#{new_username} WHERE id=#{user_to_change[:id]};"
+        @db.execute "UPDATE users SET username='#{new_username}' WHERE id=#{user_to_change[:id]};"
       end
     end
   end

@@ -1,9 +1,24 @@
-module DbHelpers
-  def create_test_db_schema
-    db = SQLite3::Database.new './test_db.sqlite3'
+module DbTestHelpers
+
+  def get_db_handler()
+    db = SQLite3::Database.open './test_db.sqlite3'
+  end
+
+  def get_test_db_file()
+    './test_db.sqlite3'
+  end
+
+  def table_exists?(db, tablename)
+    result = db.execute "SELECT name FROM sqlite_master WHERE type='table' AND name='#{tablename}';"
+    !result.empty?
+  end
+
+  def create_test_db_schema(db)
+    # if table_exists?(db, 'users') || table_exists?(db, 'disallowed_usernames')
+    #   drop_test_tables_and_close(db)
+    # end
     db.execute 'CREATE TABLE users(id INTEGER PRIMARY KEY, username TEXT)'
     db.execute 'CREATE TABLE disallowed_usernames(id INTEGER PRIMARY KEY, invalid_username TEXT)'
-    db
   end
 
   def load_test_db(db)
@@ -24,13 +39,21 @@ module DbHelpers
     db.close
   end
 
-
+  def find_duplicate_usernames(db)
+    query = <<-SQL
+    SELECT COUNT(username), username
+    FROM users
+    GROUP BY username
+    HAVING COUNT(username) > 1
+    SQL
+    db.execute query
+  end
 
   def test_disallowed_usernames
     ['grailed', 'privacy', 'settings']
   end
 
   def test_users
-    ['john' 'john', 'grailed', 'bill', 'bill', 'bill1']
+    ['john', 'john', 'grailed', 'bill', 'bill', 'bill1']
   end
 end
