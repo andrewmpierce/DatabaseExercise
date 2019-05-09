@@ -5,6 +5,7 @@ There are two major ways to use this database interface. Either run the command
 and include the `db.rb` file in the root of the directory.
 
 1) Using the CLI
+
 Run `ruby main.rb` from the root of the directory. The CLI is coded to automatically
 open the `grailed-exercise.sqlite3` database in the root of the directory. It will
 then accept 4 commands.
@@ -23,6 +24,7 @@ and will print all users with disallowed usernames in a human readable format.
 `quit` will exit the CLI and close the database connection.
 
 2) Using the Db class in an IRB session
+
 Open an irb session in the root directory of the project. With an IRB session,
 the user may include any sqlite database file with the relevant `users` and
 `disallowed_usernames` tables.
