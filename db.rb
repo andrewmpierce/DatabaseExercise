@@ -79,6 +79,7 @@ class Db
         puts "#{user_to_change[:username]} with id #{user_to_change[:id]} will become #{new_username}"
       else
         @db.execute "UPDATE users SET username='#{new_username}' WHERE id=#{user_to_change[:id]};"
+        puts "#{user_to_change[:username]} with id #{user_to_change[:id]} became #{new_username}"
       end
     end
   end
