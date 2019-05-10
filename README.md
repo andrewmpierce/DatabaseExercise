@@ -37,6 +37,7 @@ irb(main):002:0> db = Db.new
  ```
 
  The user may then execute the same actions as the CLI.
+ 
  `db.pretty_print_users_with_disallowed_names`
 
  `db.resolve_username_collisions(dry_run=true)`
