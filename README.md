@@ -1,10 +1,10 @@
-Usage Instructions:
+# Usage Instructions:
 
 There are two major ways to use this database interface. Either run the command
 `ruby main.rb` from the root of the directory to open a CLI, or open an irb session
 and include the `db.rb` file in the root of the directory.
 
-1) Using the CLI
+## 1) Using the CLI
 
 Run `ruby main.rb` from the root of the directory. The CLI is coded to automatically
 open the `grailed-exercise.sqlite3` database in the root of the directory. It will
@@ -23,21 +23,21 @@ and will print all users with disallowed usernames in a human readable format.
 
 `quit` will exit the CLI and close the database connection.
 
-2) Using the Db class in an IRB session
+## 2) Using the Db class in an IRB session
 
-Open an irb session in the root directory of the project. With an IRB session,
-the user may include any sqlite database file with the relevant `users` and
-`disallowed_usernames` tables.
+Open an irb session in the root directory of the project. The Db class is defaulted to use `grailed-exercise.sqlite3`,
+but any sqlite3 file with the relevant tables could be used. Simply pass in the file you'd prefer to use if that is 
+the case. 
 
 ```
 $ irb
 irb(main):001:0> require_relative 'db'
 => true
-irb(main):002:0> db = Db.new('./grailed-exercise.sqlite3')
+irb(main):002:0> db = Db.new
  ```
 
  The user may then execute the same actions as the CLI.
- `db.pretty_print_users_with_disallowed_names()`
+ `db.pretty_print_users_with_disallowed_names`
 
  `db.resolve_username_collisions(dry_run=true)`
 
@@ -46,3 +46,8 @@ irb(main):002:0> db = Db.new('./grailed-exercise.sqlite3')
  The `dry_run` argument is defaulted to `true` for both `resolve_username_collisions`
  and `resolve_disallowed_username_collisions`. To update the database, change the
  `dry_run` argument to `false`. 
+
+
+# Implementation Language
+
+I chose Ruby to write this sample in. I've been using Ruby for a year and a half. 
