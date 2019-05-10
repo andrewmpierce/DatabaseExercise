@@ -1,5 +1,5 @@
 require_relative 'db'
-db = Db.new('./grailed-exercise.sqlite3')
+db = Db.new
 
 while !db.request_to_exit
   command = gets.chomp

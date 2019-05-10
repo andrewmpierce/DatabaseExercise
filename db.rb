@@ -3,13 +3,13 @@ require 'sqlite3'
 class Db
   attr_reader :request_to_exit
 
-  def initialize(db_file)
+  def initialize(db_file='./grailed-exercise.sqlite3')
     @db = get_db_handler(db_file)
     @request_to_exit = false
   end
 
   def resolve_username_collisions(dry_run=true)
-    duplicate_users = find_duplicate_usernames()
+    duplicate_users = find_duplicate_usernames
     duplicate_users_hash_array = convert_to_hashes(duplicate_users)
     duplicate_users_hash_array.each do |user|
       users_to_change = @db.execute "SELECT * FROM users WHERE username='#{user[:username]}';"
@@ -19,19 +19,20 @@ class Db
   end
 
   def resolve_disallowed_username_collisions(dry_run=true)
-    users = get_users_with_disallowed_usernames()
+    users = get_users_with_disallowed_usernames
     update_users(users, dry_run)
   end
 
-  def pretty_print_users_with_disallowed_names()
-    users = get_users_with_disallowed_usernames()
-    users.each do |user|
-      puts "#{user[:username]} with id #{user[:id]}"
+  def pretty_print_users_with_disallowed_names
+    users = get_users_with_disallowed_usernames
+    users_with_disallowed_names = users.map do |user|
+      "#{user[:username]} with id #{user[:id]}"
     end
+    puts users_with_disallowed_names.join("\n")
   end
 
-  def get_users_with_disallowed_usernames()
-    disallowed_usernames = get_disallowed_usernames()
+  def get_users_with_disallowed_usernames
+    disallowed_usernames = get_disallowed_usernames
     invalid_users = []
     disallowed_usernames.each do |username|
       invalid_user = @db.execute "SELECT id, username FROM users WHERE username='#{username[:username]}';"
@@ -47,16 +48,18 @@ class Db
     puts 'Bye!'
   end
 
-  private def get_db_handler(db_file)
+  private
+
+  def get_db_handler(db_file)
     SQLite3::Database.open db_file
   end
 
-  private def get_disallowed_usernames
+  def get_disallowed_usernames
     disallowed_usernames = @db.execute "SELECT id, invalid_username FROM disallowed_usernames;"
     convert_to_hashes(disallowed_usernames)
   end
 
-  private def find_duplicate_usernames
+  def find_duplicate_usernames
     query = <<-SQL
     SELECT COUNT(username), username
     FROM users
@@ -66,7 +69,7 @@ class Db
     @db.execute query
   end
 
-  private def update_users(users_to_change, dry_run)
+  def update_users(users_to_change, dry_run)
     counter = 1
     usernames = []
     users_to_change.each do |user_to_change|
@@ -84,7 +87,7 @@ class Db
     end
   end
 
-  private def get_new_username(username)
+  def get_new_username(username)
     while existing_user?(username)
       num = (username[-1].to_i) + 1
       username[-1] = num.to_s
@@ -92,12 +95,12 @@ class Db
     username
   end
 
-  private def existing_user?(username)
+  def existing_user?(username)
     existing_users = @db.execute "SELECT * FROM users WHERE username='#{username}';"
     existing_users.empty? ? false : true
   end
 
-  private def convert_to_hashes(array_of_arrays)
+  def convert_to_hashes(array_of_arrays)
     return_array = []
     array_of_arrays.each do |array|
       return_array << {id: array[0], username: array[1]}
